@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Task Manager</title>
+    <style>
+        :root {
+            --teal: #0d9488;
+            --blue: #2563eb;
+            --yellow: #facc15;
+            --dark-gray: #1f2937;
+            --error-red: #dc2626;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--teal) 0%, var(--blue) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            width: 350px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            text-align: center;
+        }
+
+        .logo-circle {
+            width: 60px;
+            height: 60px;
+            background: var(--teal);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        h2 {
+            margin-bottom: 5px;
+            color: var(--dark-gray);
+            font-size: 26px;
+        }
+
+        p.subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-gray);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+        }
+
+        .pass-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 11px;
+            color: var(--blue);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .extra-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--teal);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: var(--yellow);
+            color: var(--dark-gray);
+            transform: translateY(-2px);
+        }
+
+        #msg {
+            margin-top: 15px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .error-msg { color: var(--error-red); font-weight: bold; }
+        .success-msg { color: #059669; font-weight: bold; }
+
+        .footer-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .footer-link a {
+            text-decoration: none;
+            color: var(--blue);
+            font-weight: bold;
+        }
+
+        .footer-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-circle">TM</div>
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Please enter your details</p>
+
+    <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="name@example.com">
+    </div>
+
+    <div class="input-group">
+        <label>Password</label>
+        <div class="pass-wrapper">
+            <input type="password" id="password" placeholder="••••••••">
+            <span class="toggle-password" onclick="togglePass()">Show</span>
+        </div>
+    </div>
+
+    <div class="extra-options">
+        <label style="display: flex; align-items: center; font-weight: normal; cursor: pointer;">
+            <input type="checkbox" style="width: auto; margin-right: 5px;"> Remember me
+        </label>
+        <a href="#" style="color: var(--blue); text-decoration: none;">Forgot password?</a>
+    </div>
+
+    <button id="loginBtn" onclick="login()">Sign In</button>
+
+    <p id="msg"></p>
+    
+    <div class="footer-link">
+        Don't have an account? <a href="/register_page">Register now</a>
+    </div>
+</div>
+
+<script>
+// Toggle Password Visibility
+function togglePass() {
+    const passInput = document.getElementById('password');
+    const toggleText = document.querySelector('.toggle-password');
+    if (passInput.type === "password") {
+        passInput.type = "text";
+        toggleText.innerText = "Hide";
+    } else {
+        passInput.type = "password";
+        toggleText.innerText = "Show";
+    }
+}
+
+function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const msgElement = document.getElementById('msg');
+    const btn = document.getElementById('loginBtn');
+
+    if (!email || !password) {
+        msgElement.innerText = "Please fill in all fields.";
+        msgElement.className = "error-msg";
+        return;
+    }
+
+    // UI Feedback
+    btn.disabled = true;
+    btn.innerText = "Authenticating...";
+    msgElement.innerText = "";
+
+    fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email: email,
+            password: password
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerText = "Sign In";
+
+        if (data.user) {
+            msgElement.innerText = "Success! Redirecting...";
+            msgElement.className = "success-msg";
+            localStorage.setItem("user_id", data.user.id);
+            // Small delay for the user to see the success message
+            setTimeout(() => {
+                window.location.href = "/dashboard";
+            }, 800);
+        } else {
+            msgElement.innerText = data.message || "Invalid credentials.";
+            msgElement.className = "error-msg";
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerText = "Sign In";
+        msgElement.innerText = "Connection error. Is your API running?";
+        msgElement.className = "error-msg";
+    });
+}
+</script>
+
+</body>
+</html>
