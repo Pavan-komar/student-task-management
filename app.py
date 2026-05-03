@@ -10,7 +10,7 @@ def get_db():
 
 @app.route('/')
 def home():
-    return "Task Manager API Running"
+    return render_template("login.html")
 
 # REGISTER API
 @app.route('/register', methods=['POST'])
