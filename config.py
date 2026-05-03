@@ -1,6 +1,9 @@
-DB_CONFIG ={
-    'host':'localhost',
-    'user':'root',
-    'password':'Sulaiman@9901332513',
-    'database':'task_manager'
+import os
+
+DB_CONFIG = {
+    "host": os.getenv("MYSQLHOST"),
+    "user": os.getenv("MYSQLUSER"),
+    "password": os.getenv("MYSQLPASSWORD"),
+    "database": os.getenv("MYSQLDATABASE"),
+    "port": int(os.getenv("MYSQLPORT", 3306))
 }
