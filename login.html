@@ -224,7 +224,7 @@ function login() {
     btn.innerText = "Authenticating...";
     msgElement.innerText = "";
 
-    fetch('/register', {
+  fetch('/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
