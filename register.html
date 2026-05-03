@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Task Manager</title>
+    <style>
+        :root {
+            --teal: #0d9488;
+            --blue: #2563eb;
+            --yellow: #facc15;
+            --dark-gray: #1f2937;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Gradient using your new Teal and Blue theme */
+            background: linear-gradient(135deg, #0d9488 0%, #2563eb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            width: 350px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: var(--dark-gray);
+            font-size: 28px;
+        }
+
+        p.subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--dark-gray);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--teal);
+        }
+
+        .pass-wrapper {
+            position: relative;
+        }
+
+        /* Toggle Password Text */
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--blue);
+            font-weight: bold;
+            user-select: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--teal);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: var(--yellow);
+            color: var(--dark-gray);
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #msg {
+            margin-top: 15px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        .success { color: #059669; font-weight: bold; }
+        .error { color: #dc2626; font-weight: bold; }
+
+        .login-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .login-link a {
+            text-decoration: none;
+            color: var(--blue);
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Join Us</h2>
+    <p class="subtitle">Set up your Task Manager account</p>
+
+    <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="John Doe">
+    </div>
+
+    <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" id="email" placeholder="name@example.com">
+    </div>
+
+    <div class="input-group">
+        <label>Password</label>
+        <div class="pass-wrapper">
+            <input type="password" id="password" placeholder="••••••••">
+            <span class="toggle-password" onclick="togglePass()">SHOW</span>
+        </div>
+    </div>
+
+    <button id="regBtn" onclick="register()">Create Account</button>
+
+    <p id="msg"></p>
+    
+    <div class="login-link">
+        Already have an account? <a href="/login_page">Sign In</a>
+    </div>
+</div>
+
+<script>
+// Show/Hide Password functionality
+function togglePass() {
+    const passInput = document.getElementById('password');
+    const toggleText = document.querySelector('.toggle-password');
+    if (passInput.type === "password") {
+        passInput.type = "text";
+        toggleText.innerText = "HIDE";
+    } else {
+        passInput.type = "password";
+        toggleText.innerText = "SHOW";
+    }
+}
+
+function register() {
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const msgElement = document.getElementById('msg');
+    const btn = document.getElementById('regBtn');
+
+    // Simple Client-side validation
+    if (!name || !email || !password) {
+        msgElement.innerText = "Please fill in all fields.";
+        msgElement.className = "error";
+        return;
+    }
+
+    // UI Feedback
+    btn.disabled = true;
+    btn.innerText = "Registering...";
+    msgElement.innerText = "";
+
+    fetch('http://127.0.0.1:5000/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: name,
+            email: email,
+            password: password
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerText = "Create Account";
+        
+        // Handle response
+        msgElement.innerText = data.message;
+        
+        if (data.message.toLowerCase().includes("success")) {
+            msgElement.className = "success";
+            // Optional: Redirect to login after 2 seconds
+            setTimeout(() => { window.location.href = "/login_page"; }, 2000);
+        } else {
+            msgElement.className = "error";
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerText = "Create Account";
+        msgElement.innerText = "Server Error. Is the backend running?";
+        msgElement.className = "error";
+    });
+}
+</script>
+
+</body>
+</html>
